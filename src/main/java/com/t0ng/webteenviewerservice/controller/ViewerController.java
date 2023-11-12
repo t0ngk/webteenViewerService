@@ -5,6 +5,7 @@ import com.t0ng.webteenviewerservice.entity.BookOnlyViewerEntity;
 import com.t0ng.webteenviewerservice.entity.BookViewerEntity;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +22,9 @@ public class ViewerController {
     private RabbitTemplate rabbitTemplate;
 
     @GetMapping("/{id}")
-    public List<BookViewerEntity> getViewerByBookId(@PathVariable String id) {
-        return ((List<BookViewerEntity>) rabbitTemplate.convertSendAndReceive("Direct", "viewerBook", id));
+    public ResponseEntity<?> getViewerByBookId(@PathVariable String id, @RequestHeader("userId") String userId) {
+        System.out.println("User ID: " + userId);
+        return ResponseEntity.ok((List<BookViewerEntity>) rabbitTemplate.convertSendAndReceive("Direct", "viewerBook", id));
     }
 
     @GetMapping("/")
